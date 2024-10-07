@@ -1,0 +1,198 @@
+# ItemToPurchase class
+class ItemToPurchase:
+    """
+    Represents an item in a shopping cart.
+
+    Attributes:
+        item_name (str): Name of the item. Defaults to "none".
+        item_price (float): Price of the item. Defaults to 0.0.
+        item_quantity (int): Quantity of the item. Defaults to 0.
+    """
+    def __init__(self, item_name="none", item_price=0.0, item_quantity=0):
+        """
+        Initializes an instance of the ItemToPurchase class with optional parameters.
+
+        Args:
+            item_name (str): Name of the item. Defaults to "none".
+            item_price (float): Price of the item. Defaults to 0.0.
+            item_quantity (int): Quantity of the item. Defaults to 0.
+        """
+        self.item_name = item_name
+        self.item_price = item_price
+        self.item_quantity = item_quantity
+
+    def print_item_cost(self):
+        """
+        Prints the total cost of the item based on its price and quantity.
+
+        Output format: "<item_name> <item_quantity> @ $<item_price> = $<total_cost>"
+        """
+        total_cost = self.item_quantity * self.item_price
+        print(f"{self.item_name} {self.item_quantity} @ ${self.item_price} = ${total_cost}")
+
+
+# ShoppingCart class
+class ShoppingCart:
+    """
+    Represents a shopping cart containing multiple items for a customer.
+
+    Attributes:
+        customer_name (str): Name of the customer. Defaults to "none".
+        current_date (str): Date of the shopping session. Defaults to “October 6, 2024".
+        cart_items (list): List of ItemToPurchase objects in the cart.
+    """
+    def __init__(self, customer_name="none", current_date="October 6, 2024"):
+        """
+        Initializes an instance of the ShoppingCart class with customer name and current date.
+
+        Args:
+            customer_name (str): Name of the customer. Defaults to "none".
+            current_date (str): Current date. Defaults to "October 6, 2024".
+        """
+        self.customer_name = customer_name
+        self.current_date = current_date
+        self.cart_items = []
+
+    def add_item(self, item):
+        """
+        Adds an item to the cart.
+
+        Args:
+            item (ItemToPurchase): The item to be added to the cart.
+        """
+        self.cart_items.append(item)
+
+    def remove_item(self, item_name):
+        """
+        Removes an item from the cart based on the item name.
+
+        Args:
+            item_name (str): The name of the item to remove.
+        """
+        for item in self.cart_items:
+            if item.item_name == item_name:
+                self.cart_items.remove(item)
+                return
+        print("Item not found in cart. Nothing removed.")
+
+    def modify_item(self, item):
+        """
+        Modifies the quantity of an item in the cart.
+
+        Args:
+            item (ItemToPurchase): An ItemToPurchase object containing the updated quantity.
+        """
+        for cart_item in self.cart_items:
+            if cart_item.item_name == item.item_name:
+                if item.item_quantity != 0:
+                    cart_item.item_quantity = item.item_quantity
+                return
+        print("Item not found in cart. Nothing modified.")
+
+    def get_num_items_in_cart(self):
+        """
+        Calculates and returns the total number of items in the cart.
+
+        Returns:
+            int: Total number of items in the cart.
+        """
+        total_items = sum(item.item_quantity for item in self.cart_items)
+        return total_items
+
+    def get_cost_of_cart(self):
+        """
+        Calculates and returns the total cost of all items in the cart.
+
+        Returns:
+            float: Total cost of all items in the cart.
+        """
+        total_cost = sum(item.item_quantity * item.item_price for item in self.cart_items)
+        return total_cost
+
+    def print_total(self):
+        """
+        Prints the total number of items and the total cost of the cart. 
+        If the cart is empty, it prints "SHOPPING CART IS EMPTY".
+        """
+        print(f"{self.customer_name}'s Shopping Cart - {self.current_date}")
+        print(f"Number of Items: {self.get_num_items_in_cart()}")
+        if not self.cart_items:
+            print("SHOPPING CART IS EMPTY")
+        else:
+            for item in self.cart_items:
+                item.print_item_cost()
+            print(f"Total: ${self.get_cost_of_cart()}")
+
+    def print_descriptions(self):
+        """
+        Prints the name of each item in the cart. Used to describe items without showing cost.
+        """
+        print(f"{self.customer_name}'s Shopping Cart - {self.current_date}")
+        print("Item Descriptions")
+        for item in self.cart_items:
+            print(f"{item.item_name}")
+
+
+# Main function to interact with user and display menu
+def print_menu(cart):
+    """
+    Displays a menu of options for the user to manage the shopping cart.
+
+    Args:
+        cart (ShoppingCart): The user's shopping cart.
+    """
+    while True:
+        print("\nMENU")
+        print("a - Add item to cart")
+        print("r - Remove item from cart")
+        print("c - Change item quantity")
+        print("i - Output items' descriptions")
+        print("o - Output shopping cart")
+        print("q - Quit")
+        choice = input("Choose an option: ").lower()
+
+        if choice == 'a':
+            item_name = input("Enter the item name:\n")
+            item_price = float(input("Enter the item price:\n"))
+            item_quantity = int(input("Enter the item quantity:\n"))
+            item = ItemToPurchase(item_name, item_price, item_quantity)
+            cart.add_item(item)
+
+        elif choice == 'r':
+            item_name = input("Enter name of item to remove:\n")
+            cart.remove_item(item_name)
+
+        elif choice == 'c':
+            item_name = input("Enter the item name:\n")
+            new_quantity = int(input("Enter the new quantity:\n"))
+            modified_item = ItemToPurchase(item_name, 0, new_quantity)
+            cart.modify_item(modified_item)
+
+        elif choice == 'i':
+            cart.print_descriptions()
+
+        elif choice == 'o':
+            cart.print_total()
+
+        elif choice == 'q':
+            break
+
+        else:
+            print("Invalid option, please try again.")
+
+
+# Main execution block
+if __name__ == "__main__":
+    """
+    Main execution block to create a ShoppingCart object and run the menu system.
+    """
+    customer_name = input("Enter customer's name:\n")
+    current_date = input("Enter today's date:\n")
+    print(f"Customer name: {customer_name}")
+    print(f"Today's date: {current_date}")
+    
+    # Create ShoppingCart object
+    cart = ShoppingCart(customer_name, current_date)
+    
+    # Show menu
+    print_menu(cart)
